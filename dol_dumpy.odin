@@ -23,7 +23,7 @@ Type :: enum {
 
 Options :: struct {
     dol:     os.Handle `args:"pos=0,required,file=r" usage:"main.dol"`,
-    type:    Type      `args:"pos=1,required"        usage:"data type (valid: string, float)""`,
+    type:    Type      `args:"pos=1,required"        usage:"data type (valid: string, float)"`,
     address: u32be     `args:"pos=2,required"        usage:"virtual address"`,
 }
 
