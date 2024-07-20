@@ -24,13 +24,16 @@ Type :: enum {
 Options :: struct {
     dol:     os.Handle `args:"pos=0,required,file=r" usage:"main.dol"`,
     type:    Type      `args:"pos=1,required"        usage:"data type (valid: string, float)"`,
-    address: u32be     `args:"pos=2,required"        usage:"virtual address"`,
+    base:    u32be     `args:"pos=2,required"        usage:"virtual address"`,
+    offset:  int       `args:"pos=3"                 usage:"optional offset from base address"`  
 }
 
 main :: proc() {
     options: Options
     flags.parse_or_exit(&options, os.args)
 
+    target_address := options.base + u32be(options.offset)
+    
     dol, _ := os.read_entire_file(options.dol)
 
     assert(len(dol) > size_of(DOL_Header))
@@ -41,10 +44,10 @@ main :: proc() {
         loading_address := header.data_loading_addresses[i]
         size := header.data_section_sizes[i]
         end := loading_address + size
-        if options.address >= loading_address &&
-           options.address < end
+        if target_address >= loading_address &&
+           target_address < end
         {
-            offset := data_offset + (options.address - loading_address)
+            offset := data_offset + (target_address - loading_address)
 
             switch options.type {
                 case .string:
